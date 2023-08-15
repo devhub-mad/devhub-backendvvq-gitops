@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: devhub-backendvvq-pipeline-run-init
+  namespace: devhub-test
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+  labels:
+    tekton.dev/pipeline: devhub-backendvvq-pipeline
+    type: pipeline
+spec:
+  params:
+    - name: source-repo
+      value: 'https:////devhub-backendvvq.git'
+    - name: source-branch
+      value: main
+    - name: output-image
+      value: //devhub-backendvvq
+  pipelineRef:
+    name: devhub-backendvvq-pipeline
+  serviceAccountName: pipeline
+  workspaces:
+    - name: source-folder
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
